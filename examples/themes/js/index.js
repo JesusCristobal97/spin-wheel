@@ -3,7 +3,10 @@ import {loadFonts, loadImages} from '../../../scripts/util.js';
 import {props} from './props.js';
 
 // audios
-const spinSound = new Audio('./sounds/spin.mp3');
+const spinSound = new Audio('./sounds/rulete.mp3');
+const finishSound1 = new Audio('./sounds/winner1.wav');
+const finishSound2 = new Audio('./sounds/finish.wav');
+
 
 window.onload = async () => {
 
@@ -11,6 +14,10 @@ window.onload = async () => {
 
   const wheel = new Wheel(document.querySelector('.wheel-wrapper'));
   const dropdown = document.querySelector('select');
+
+  // Cargar el sonido del botón
+const buttonSound = new Audio('./sounds/botonsound.wav'); // Ruta al archivo de sonido
+
 
   const images = [];
 
@@ -48,10 +55,20 @@ window.onload = async () => {
   // Save object globally for easy debugging.
   window.wheel = wheel;
 
-  const btnSpin = document.querySelector('button');
+  const btnSpin = document.querySelector('#btnStart');
 
   btnSpin.addEventListener('click', () => {
+  
   spinSound.play();
+   // Reproducir sonido del botón
+   buttonSound.play();
+  // Añadir clase pressed para simular el efecto hundido
+  btnSpin.classList.add('pressed');
+
+  // Quitar la clase 'pressed' después de 8 segundos
+  setTimeout(() => {
+      btnSpin.classList.remove('pressed');
+  }, 8000); // 8 segundos
 
   setTimeout(() => {
     winSound.play();
@@ -62,19 +79,43 @@ window.onload = async () => {
   let modifier = 0;
 
   window.addEventListener('click', (e) => {
-
-    // Listen for click event on spin button:
     if (e.target === btnSpin) {
-      const {duration, winningItemRotaion} = calcSpinToValues();
-      wheel.spinTo(winningItemRotaion, duration);
-    }
+        const {duration, winningItemRotaion} = calcSpinToValues();
+        
+        // Reproducir sonido y hacer que se repita
+        spinSound.play();
+        spinSound.loop = true;
 
-  });
+        // Girar la ruleta
+        const wheelElement = document.querySelector('.wheel-wrapper');
+
+        // Añadir la clase vibrate para que la ruleta vibre durante el giro
+        wheelElement.classList.add('vibrate');
+        // Girar la ruleta
+        wheel.spinTo(winningItemRotaion, duration);
+
+        // Detener el sonido cuando el giro haya terminado
+        setTimeout(() => {
+            spinSound.pause();
+            spinSound.currentTime = 0; // Reiniciar el sonido para la próxima vez
+        
+            // Quitar la clase vibrate para detener la vibración
+            wheelElement.classList.remove('vibrate');
+
+            // Reproducir los sonidos al finalizar el giro
+            finishSound2.play();  // Reproduce el primer sonido
+            finishSound2.onended = () => {
+                finishSound1.play();  // Reproduce el segundo sonido cuando el primero termine
+            };
+        
+          }, duration); // Detener el sonido cuando el giro termine
+    }
+});
 
   function calcSpinToValues() {
-    const duration = 3000;
-    const winningItemRotaion = getRandomInt(360, 360 * 1.75) + modifier;
-    modifier += 360 * 1.75;
+    const duration = 9149;
+    const winningItemRotaion = getRandomInt(360 * 5, 360 * 10) + modifier;
+    modifier += 360 * 10;
     return {duration, winningItemRotaion};
   }
 

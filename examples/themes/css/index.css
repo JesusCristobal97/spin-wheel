@@ -75,3 +75,42 @@ button {
   margin-right: 10px;
   max-width: 100px;
 }
+@keyframes vibrate {
+  0% { transform: translate(0); }
+  25% { transform: translate(2px, 2px); }
+  50% { transform: translate(-2px, -2px); }
+  75% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.vibrate {
+  animation: vibrate 0.1s infinite; /* Efecto de vibración cada 0.1 segundos */
+}
+
+.start-button {
+  position: absolute;
+  right: 50px;
+  bottom: 50px;
+  width: 300px;
+  height: 300px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+}
+
+/* Efecto de hover solo si el botón no está presionado */
+.start-button:not(.pressed):hover {
+  transform: scale(1.05); /* Aumentar ligeramente cuando el mouse esté sobre el botón */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Estado de presionado o clase 'pressed' */
+.start-button:active,
+.start-button.pressed {
+  transform: scale(0.9); /* Reducir el tamaño para simular el hundimiento */
+  box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.3); /* Sombra interna para efecto de presión */
+  transition: transform 0.05s ease-in-out, box-shadow 0.05s ease-in-out;
+}
