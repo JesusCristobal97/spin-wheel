@@ -8,18 +8,26 @@
   <link rel="icon" href="data:image/x-icon;," type="image/x-icon">
   <link rel="stylesheet" href="./css/index.css"/>
   <script src="./js/index.js" type="module"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
   <div class="gui-wrapper">
     <p>Click-drag (or touch-flick) to spin the wheel.</p>
     <div>
-      <button>Spin</button>
+      <button class="spin-button" onclick="spinWheel()">START</button>
       <p><label>Theme:</label><select></select></p>
     </div>
   </div>
 
   <div class="wheel-wrapper"></div>
+
+  <!-- Sonido de la ruleta girando -->
+  <audio id="wheel-sound" src="ruta/del/sonido/wheel-spin.mp3"></audio>
+
 </body>
 
 </html>

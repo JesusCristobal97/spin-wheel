@@ -2,6 +2,9 @@ import {Wheel} from '../../../dist/spin-wheel-esm.js';
 import {loadFonts, loadImages} from '../../../scripts/util.js';
 import {props} from './props.js';
 
+// audios
+const spinSound = new Audio('./sounds/spin.mp3');
+
 window.onload = async () => {
 
   await loadFonts(props.map(i => i.itemLabelFont));
@@ -46,6 +49,16 @@ window.onload = async () => {
   window.wheel = wheel;
 
   const btnSpin = document.querySelector('button');
+
+  btnSpin.addEventListener('click', () => {
+  spinSound.play();
+
+  setTimeout(() => {
+    winSound.play();
+    showWinningEffect();
+  }, 3000);
+});
+
   let modifier = 0;
 
   window.addEventListener('click', (e) => {
@@ -78,5 +91,10 @@ window.onload = async () => {
     obj[pName] = i;
     return i;
   }
+
+
+  // funciones para el sonido
+
+  
 
 };
