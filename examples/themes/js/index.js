@@ -136,6 +136,15 @@ const buttonSound = new Audio('./sounds/botonsound.wav'); // Ruta al archivo de 
 
   // funciones para el sonido
 
+  document.addEventListener('mousemove', function (e) {
+    const guiWrapper = document.querySelector('.gui-wrapper');
   
+    // Mostrar la barra si el mouse está en la parte superior (dentro de los primeros 50px)
+    if (e.clientY < 50) {
+      guiWrapper.classList.add('visible');
+    } else {
+      guiWrapper.classList.remove('visible');
+    }
+  });
 
 };

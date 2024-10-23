@@ -46,12 +46,25 @@ body {
   width: 100%;
 }
 
+/* Estilos para ocultar la barra por defecto */
 .gui-wrapper {
+  position: fixed; /* Fijar la barra en la parte superior */
+  top: 0;
+  left: 0;
+  right: 0;
   padding: 10px;
-  background-color: #f3f3f3;
+  background-color: #333;
+  color: #fff;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  opacity: 0; /* Comienza oculta */
+  transition: opacity 0.5s ease-in-out; /* Transición suave para aparecer/desaparecer */
+  z-index: 1000; /* Asegúrate de que esté por encima del resto del contenido */
+}
+
+.gui-wrapper.visible {
+  opacity: 1; /* Mostrar la barra */
 }
 
 .gui-wrapper > div {
