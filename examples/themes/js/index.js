@@ -112,6 +112,7 @@ const buttonSound = new Audio('./sounds/botonsound.wav'); // Ruta al archivo de 
     }
 });
 
+/*
   function calcSpinToValues() {
     const duration = 9149;
     const winningItemRotaion = getRandomInt(360 * 5, 360 * 10) + modifier;
@@ -132,7 +133,28 @@ const buttonSound = new Audio('./sounds/botonsound.wav'); // Ruta al archivo de 
     obj[pName] = i;
     return i;
   }
+*/
 
+function calcSpinToValues() {
+  const duration = 9149;
+  const winningItemRotaion = getRandomInt(355 * 10, 360 * 10) + modifier;
+  modifier += 360 * 10;
+  return {duration, winningItemRotaion};
+}
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function initImage(obj, pName) {
+  if (!obj[pName]) return null;
+  const i = new Image();
+  i.src = obj[pName];
+  obj[pName] = i;
+  return i;
+}
 
   // funciones para el sonido
 
