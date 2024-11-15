@@ -3,6 +3,7 @@ import esbuild from 'esbuild';
 import {readFile} from 'fs/promises';
 import * as util from './util.js';
 import * as browsersync from 'browser-sync';
+import open from 'open';
 
 function startWebServer (startPath) {
 
@@ -16,8 +17,11 @@ function startWebServer (startPath) {
     ignore: [
       './src/*.*', // esbuild is monitoring this folder.
       ],
+  }, () => {
+    // Abrir automáticamente las dos pestañas cuando el servidor está listo
+    open(`http://localhost:3000${startPath}`); // Abrir la primera pestaña
+    open(`http://localhost:3000/examples/themes/control.html`); // Abrir la segunda pestaña
   });
-
 }
 
 const p = JSON.parse(

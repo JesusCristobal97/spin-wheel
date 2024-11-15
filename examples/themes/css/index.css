@@ -55,7 +55,7 @@ body {
   padding: 10px;
   background-color: #333;
   color: #fff;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 10px;
   opacity: 0; /* Comienza oculta */

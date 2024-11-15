@@ -43,7 +43,8 @@
     "esbuild": "^0.15.11",
     "eslint": "^8.25.0",
     "jest": "^27.4.3",
-    "jest-canvas-mock": "^2.5.1"
+    "jest-canvas-mock": "^2.5.1",
+    "open": "^10.1.0"
   },
   "optionalDependencies": {
     "canvas": "^2.11.2"

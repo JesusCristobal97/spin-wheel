@@ -9,7 +9,8 @@ const finishSound2 = new Audio('./sounds/finish.wav');
 
 
 window.onload = async () => {
-
+    
+  
   await loadFonts(props.map(i => i.itemLabelFont));
 
   const wheel = new Wheel(document.querySelector('.wheel-wrapper'));
@@ -76,6 +77,14 @@ const buttonSound = new Audio('./sounds/botonsound.wav'); // Ruta al archivo de 
   }, 3000);
 });
 
+// Escucha la tecla Espacio para iniciar el giro
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    btnSpin.click(); // Simula el clic en el botón START
+  }
+});
+
   let modifier = 0;
 
   window.addEventListener('click', (e) => {
@@ -134,7 +143,7 @@ const buttonSound = new Audio('./sounds/botonsound.wav'); // Ruta al archivo de 
     return i;
   }
 */
-
+/*
 function calcSpinToValues() {
   const duration = 9149;
   const winningItemRotaion = getRandomInt(355 * 10, 360 * 10) + modifier;
@@ -154,8 +163,71 @@ function initImage(obj, pName) {
   i.src = obj[pName];
   obj[pName] = i;
   return i;
+} 
+*/   
+
+// Función principal de la ruleta
+function calcSpinToValues() {
+  // const selectedBlock = document.querySelector('#blockSelector').value; // Bloque seleccionado
+ const selectedBlock = localStorage.getItem('selectedBlock') || '1'; // **Nuevo**: Capturar el bloque seleccionado desde `localStorage`
+  const duration = 9149; // Duración del giro
+
+  let minDegrees, maxDegrees;
+
+  // Determinar los rangos según el bloque seleccionado
+  if (selectedBlock === '1') {
+      minDegrees = 360 * 10; // Inicio de Bloque 1
+      maxDegrees = 360 * 10 + 90; // Fin de Bloque 1
+  } else if (selectedBlock === '2') {
+      minDegrees = 360 * 10 + 90; // Inicio de Bloque 2
+      maxDegrees = 360 * 10 + 180; // Fin de Bloque 2
+  } else if (selectedBlock === '3') {
+      minDegrees = 360 * 10 + 180; // Inicio de Bloque 3
+      maxDegrees = 360 * 10 + 270; // Fin de Bloque 3
+  } else if (selectedBlock === '4') {
+      minDegrees = 360 * 10 + 270; // Inicio de Bloque 4
+      maxDegrees = 360 * 10 + 360; // Fin de Bloque 4
+  }
+
+  // Generar rotación dentro del rango del bloque seleccionado
+  const winningItemRotaion = getRandomInt(minDegrees, maxDegrees) + modifier;
+
+  modifier += 360 * 10; // Aseguramos acumulación de vueltas completas
+  console.log(`Rotación calculada: ${winningItemRotaion}`); // Mostrar en consola
+  
+
+  // Simulación del giro (aquí integras la lógica gráfica de tu ruleta)
+  // por ahora, solo devolvemos los valores
+  return { duration, winningItemRotaion };
 }
 
+// Función para obtener un número aleatorio dentro de un rango
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function initImage(obj, pName) {
+  if (!obj[pName]) return null;
+  const i = new Image();
+  i.src = obj[pName];
+  obj[pName] = i;
+  return i;
+} 
+/*
+if (window.location.pathname.includes('control.html')) {
+  const blockSelector = document.getElementById('blockSelector');
+  // Actualizar `localStorage` automáticamente al cambiar la selección
+  blockSelector.addEventListener('change', (event) => {
+    localStorage.setItem('selectedBlock', event.target.value); // Guardar selección
+    console.log(`Bloque actualizado a: ${event.target.value}`);
+  });
+
+  // Establecer el valor predeterminado desde `localStorage`
+  blockSelector.value = localStorage.getItem('selectedBlock') || '1';
+}
+*/
   // funciones para el sonido
 
   document.addEventListener('mousemove', function (e) {
@@ -168,5 +240,4 @@ function initImage(obj, pName) {
       guiWrapper.classList.remove('visible');
     }
   });
-
 };

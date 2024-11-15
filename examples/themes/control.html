@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Seleccionar Bloque</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* Alinea los elementos hacia la parte superior */
+      height: 100vh;
+    }
+
+    h2 {
+      color: #333;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    #blockSelector {
+      width: 400px;
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #555;
+      border-radius: 5px;
+      background-color: #fff;
+      color: #333;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    #blockSelector:focus {
+      border-color: #007BFF;
+      box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    }
+
+    #blockSelector option {
+      padding: 10px;
+    }
+
+    div {
+      text-align: center;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+  <script>
+    // Añadir un evento para capturar el cambio del select
+    document.addEventListener('DOMContentLoaded', () => {
+  const blockSelector = document.getElementById('blockSelector');
+  blockSelector.addEventListener('change', (event) => {
+    localStorage.setItem('selectedBlock', event.target.value);
+    console.log(`Bloque actualizado a: ${event.target.value}`);
+  });
+
+  // Establece el valor predeterminado
+  blockSelector.value = localStorage.getItem('selectedBlock') || '1';
+});
+  </script>
+</head>
+
+<body>
+  <div style="text-align: center; margin-top: 50px;">
+    <h2>Selecciona un Bloque</h2>
+    <label for="blockSelector">Bloques:</label>
+    <select id="blockSelector">
+      <option value="1">Bloque 1 (Fantasy, Sports, War, Mystery)</option>
+      <option value="2">Bloque 2 (Musical, Drama, Documentary, Crime)</option>
+      <option value="3">Bloque 3 (Indie, Western, Thriller, Romance)</option>
+      <option value="4">Bloque 4 (Comedy, Science Fict., Horror, Action)</option>
+    </select>
+  </div>
+</body>
+
+</html>

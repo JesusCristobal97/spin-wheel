@@ -1,7 +1,7 @@
 import {AlignText} from '../../../src/constants.js';
 
 export const props = [
-
+/*
   {
     name: 'Workout',
     radius: 0.84,
@@ -152,7 +152,7 @@ export const props = [
       },
     ],
   },
-
+*/
   {
     name: 'Movies',
     radius: 0.88,
@@ -219,7 +219,7 @@ export const props = [
       },
     ],
   },
-
+/*
   {
     name: 'Money',
     radius: 0.88,
@@ -393,5 +393,5 @@ export const props = [
       },
     ],
   },
-
+*/
 ];
