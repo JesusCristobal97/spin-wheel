@@ -1,34 +1,28 @@
-import {Wheel} from '../../../dist/spin-wheel-esm.js';
-import {loadFonts, loadImages} from '../../../scripts/util.js';
-import {props} from './props.js';
+import { Wheel } from '../../../dist/spin-wheel-esm.js';
+import { loadFonts, loadImages } from '../../../scripts/util.js';
+import { props } from './props.js';
 
-// audios
+// Audios
 const spinSound = new Audio('./sounds/rulete.mp3');
 const finishSound1 = new Audio('./sounds/winner1.wav');
 const finishSound2 = new Audio('./sounds/finish.wav');
-
+const buttonSound = new Audio('./sounds/botonsound.wav'); // Sonido del botón
 
 window.onload = async () => {
-    
-  
   await loadFonts(props.map(i => i.itemLabelFont));
 
   const wheel = new Wheel(document.querySelector('.wheel-wrapper'));
   const dropdown = document.querySelector('select');
 
-  // Cargar el sonido del botón
-const buttonSound = new Audio('./sounds/botonsound.wav'); // Ruta al archivo de sonido
-
-
   const images = [];
 
   for (const p of props) {
-    // Initalise dropdown with the names of each example:
+    // Inicializar el dropdown con los nombres de cada ejemplo
     const opt = document.createElement('option');
     opt.textContent = p.name;
     dropdown.append(opt);
 
-    // Convert image urls into actual images:
+    // Convertir las URLs de las imágenes en objetos Image
     images.push(initImage(p, 'image'));
     images.push(initImage(p, 'overlayImage'));
     for (const item of p.items) {
@@ -38,103 +32,211 @@ const buttonSound = new Audio('./sounds/botonsound.wav'); // Ruta al archivo de 
 
   await loadImages(images);
 
-  // Show the wheel once everything has loaded
+  // Mostrar la ruleta una vez que todo haya cargado
   document.querySelector('.wheel-wrapper').style.visibility = 'visible';
 
-  // Handle dropdown change:
+  // Manejar el cambio en el dropdown
   dropdown.onchange = () => {
     wheel.init({
       ...props[dropdown.selectedIndex],
-      rotation: wheel.rotation, // Preserve value.
+      rotation: wheel.rotation, // Preservar el valor de rotación actual
     });
   };
 
-  // Select default:
+  // Seleccionar el primer elemento por defecto
   dropdown.options[0].selected = 'selected';
   dropdown.onchange();
 
-  // Save object globally for easy debugging.
+  // Guardar el objeto wheel globalmente para depuración
   window.wheel = wheel;
 
+  // Referencia al botón START
   const btnSpin = document.querySelector('#btnStart');
 
-  btnSpin.addEventListener('click', () => {
-  
-  spinSound.play();
-   // Reproducir sonido del botón
-   buttonSound.play();
-  // Añadir clase pressed para simular el efecto hundido
-  btnSpin.classList.add('pressed');
+  // Variables para controlar el giro
+  let isSpinning = false;
+  let isDecelerating = false;
+  let rotationSpeed = 0;
+  let rotationAngle = wheel.rotation || 0; // Obtener rotación actual o iniciar en 0
+  const maxRotationSpeed = 20; // Velocidad máxima de rotación
+  let spinAnimationFrame;
+  let targetRotation = 0;
+  let decelerationStartRotation = 0;
+  let decelerationDuration = 0;
+  let decelerationStartTime = 0;
 
-  // Quitar la clase 'pressed' después de 8 segundos
-  setTimeout(() => {
-      btnSpin.classList.remove('pressed');
-  }, 8000); // 8 segundos
-
-  setTimeout(() => {
-    winSound.play();
-    showWinningEffect();
-  }, 3000);
-});
-
-// Escucha la tecla Espacio para iniciar el giro
-document.addEventListener('keydown', (e) => {
-  if (e.code === 'Space') {
-    e.preventDefault();
-    btnSpin.click(); // Simula el clic en el botón START
-  }
-});
-
-  let modifier = 0;
-
-  window.addEventListener('click', (e) => {
-    if (e.target === btnSpin) {
-        const {duration, winningItemRotaion} = calcSpinToValues();
-        
-        // Reproducir sonido y hacer que se repita
-        spinSound.play();
-        spinSound.loop = true;
-
-        // Girar la ruleta
-        const wheelElement = document.querySelector('.wheel-wrapper');
-
-        // Añadir la clase vibrate para que la ruleta vibre durante el giro
-        wheelElement.classList.add('vibrate');
-        // Girar la ruleta
-        wheel.spinTo(winningItemRotaion, duration);
-
-        // Detener el sonido cuando el giro haya terminado
-        setTimeout(() => {
-            spinSound.pause();
-            spinSound.currentTime = 0; // Reiniciar el sonido para la próxima vez
-        
-            // Quitar la clase vibrate para detener la vibración
-            wheelElement.classList.remove('vibrate');
-
-            // Reproducir los sonidos al finalizar el giro
-            finishSound2.play();  // Reproduce el primer sonido
-            finishSound2.onended = () => {
-                finishSound1.play();  // Reproduce el segundo sonido cuando el primero termine
-            };
-        
-          }, duration); // Detener el sonido cuando el giro termine
+  // Escuchar la tecla Espacio para iniciar y detener el giro
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !isSpinning && !isDecelerating) {
+      e.preventDefault();
+      startSpin();
     }
-});
+  });
 
-/*
+  document.addEventListener('keyup', (e) => {
+    if (e.code === 'Space' && isSpinning) {
+      e.preventDefault();
+      stopSpin();
+    }
+  });
+
+  // Manejar el evento de clic en el botón START
+  btnSpin.addEventListener('mousedown', () => {
+    if (!isSpinning && !isDecelerating) {
+      startSpin();
+    }
+  });
+
+  btnSpin.addEventListener('mouseup', () => {
+    if (isSpinning) {
+      stopSpin();
+    }
+  });
+
+  // Función para iniciar el giro
+  function startSpin() {
+    isSpinning = true;
+    isDecelerating = false;
+    rotationSpeed = 0;
+
+    // Reproducir sonidos
+    spinSound.play();
+    spinSound.loop = true;
+    buttonSound.play();
+
+    // Añadir clase 'pressed' para efecto visual
+    btnSpin.classList.add('pressed');
+
+    // Añadir clase 'vibrate' para efecto visual en la ruleta
+    document.querySelector('.wheel-wrapper').classList.add('vibrate');
+
+    // Iniciar la animación de rotación
+    spinAnimationFrame = requestAnimationFrame(rotateWheel);
+  }
+
+  // Función para rotar la ruleta continuamente
+  function rotateWheel() {
+    if (!isSpinning) return;
+
+    // Aumentar la velocidad hasta el máximo
+    if (rotationSpeed < maxRotationSpeed) {
+      rotationSpeed += 0.5; // Ajusta la aceleración según sea necesario
+    }
+
+    // Actualizar el ángulo de rotación
+    rotationAngle = (rotationAngle + rotationSpeed) % 360;
+    wheel.rotation = rotationAngle;
+    wheel.draw();
+
+    // Continuar la animación
+    spinAnimationFrame = requestAnimationFrame(rotateWheel);
+  }
+
+  // Función para detener el giro y desacelerar
+  function stopSpin() {
+    isSpinning = false;
+    isDecelerating = true;
+
+    // Detener el sonido de giro
+    spinSound.pause();
+    spinSound.currentTime = 0;
+
+    // Quitar clase 'pressed' del botón
+    btnSpin.classList.remove('pressed');
+
+    // Quitar la clase 'vibrate' para detener el efecto visual
+    document.querySelector('.wheel-wrapper').classList.remove('vibrate');
+
+    // Obtener la rotación objetivo dentro del bloque seleccionado
+    const { winningItemRotation } = calcSpinToValues();
+
+    // Calcular la rotación objetivo agregando rotaciones completas para un mejor efecto
+    const decelerationRotations = 3; // Número de rotaciones completas durante la desaceleración
+    const currentRotationMod = rotationAngle % 360;
+    const angleDifference = (winningItemRotation - currentRotationMod + 360) % 360;
+    targetRotation = rotationAngle + angleDifference + decelerationRotations * 360;
+
+    // Guardar valores para la interpolación
+    decelerationStartRotation = rotationAngle;
+    decelerationDuration = 4000; // Duración de la desaceleración en milisegundos
+    decelerationStartTime = null;
+
+    // Iniciar la desaceleración
+    spinAnimationFrame = requestAnimationFrame(decelerateWheel);
+  }
+
+  // Función de easing (suavizado) cúbica
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  // Función para desacelerar y detener la ruleta suavemente
+  function decelerateWheel(timestamp) {
+    if (!isDecelerating) return;
+
+    if (!decelerationStartTime) {
+      decelerationStartTime = timestamp;
+    }
+
+    const elapsed = timestamp - decelerationStartTime;
+    const progress = Math.min(elapsed / decelerationDuration, 1); // Asegurarse de que no exceda 1
+    const easedProgress = easeOutCubic(progress);
+
+    // Calcular la rotación actual
+    rotationAngle = decelerationStartRotation + (targetRotation - decelerationStartRotation) * easedProgress;
+    wheel.rotation = rotationAngle % 360;
+    wheel.draw();
+
+    if (progress < 1) {
+      // Continuar la animación
+      spinAnimationFrame = requestAnimationFrame(decelerateWheel);
+    } else {
+      // Desaceleración completa
+      isDecelerating = false;
+
+      // Reproducir sonidos de finalización
+      finishSound2.play();
+      finishSound2.onended = () => {
+        finishSound1.play();
+      };
+    }
+  }
+
+  // Función para calcular los valores de giro según el bloque seleccionado
   function calcSpinToValues() {
-    const duration = 9149;
-    const winningItemRotaion = getRandomInt(360 * 5, 360 * 10) + modifier;
-    modifier += 360 * 10;
-    return {duration, winningItemRotaion};
+    const selectedBlock = localStorage.getItem('selectedBlock') || '1';
+
+    let minDegrees, maxDegrees;
+
+    // Determinar los rangos según el bloque seleccionado
+    if (selectedBlock === '1') {
+      minDegrees = 0;
+      maxDegrees = 90;
+    } else if (selectedBlock === '2') {
+      minDegrees = 90;
+      maxDegrees = 180;
+    } else if (selectedBlock === '3') {
+      minDegrees = 180;
+      maxDegrees = 270;
+    } else if (selectedBlock === '4') {
+      minDegrees = 270;
+      maxDegrees = 360;
+    }
+
+    // Generar rotación dentro del rango del bloque seleccionado
+    const winningItemRotation = getRandomInt(minDegrees, maxDegrees);
+
+    console.log(`Rotación calculada: ${winningItemRotation}`); // Mostrar en consola
+
+    return { winningItemRotation };
   }
 
+  // Función para obtener un número aleatorio dentro de un rango
   function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min)) + min;
+    return Math.random() * (max - min) + min;
   }
 
+  // Función para inicializar imágenes
   function initImage(obj, pName) {
     if (!obj[pName]) return null;
     const i = new Image();
@@ -142,97 +244,11 @@ document.addEventListener('keydown', (e) => {
     obj[pName] = i;
     return i;
   }
-*/
-/*
-function calcSpinToValues() {
-  const duration = 9149;
-  const winningItemRotaion = getRandomInt(355 * 10, 360 * 10) + modifier;
-  modifier += 360 * 10;
-  return {duration, winningItemRotaion};
-}
 
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
-function initImage(obj, pName) {
-  if (!obj[pName]) return null;
-  const i = new Image();
-  i.src = obj[pName];
-  obj[pName] = i;
-  return i;
-} 
-*/   
-
-// Función principal de la ruleta
-function calcSpinToValues() {
-  // const selectedBlock = document.querySelector('#blockSelector').value; // Bloque seleccionado
- const selectedBlock = localStorage.getItem('selectedBlock') || '1'; // **Nuevo**: Capturar el bloque seleccionado desde `localStorage`
-  const duration = 9149; // Duración del giro
-
-  let minDegrees, maxDegrees;
-
-  // Determinar los rangos según el bloque seleccionado
-  if (selectedBlock === '1') {
-      minDegrees = 360 * 10; // Inicio de Bloque 1
-      maxDegrees = 360 * 10 + 90; // Fin de Bloque 1
-  } else if (selectedBlock === '2') {
-      minDegrees = 360 * 10 + 90; // Inicio de Bloque 2
-      maxDegrees = 360 * 10 + 180; // Fin de Bloque 2
-  } else if (selectedBlock === '3') {
-      minDegrees = 360 * 10 + 180; // Inicio de Bloque 3
-      maxDegrees = 360 * 10 + 270; // Fin de Bloque 3
-  } else if (selectedBlock === '4') {
-      minDegrees = 360 * 10 + 270; // Inicio de Bloque 4
-      maxDegrees = 360 * 10 + 360; // Fin de Bloque 4
-  }
-
-  // Generar rotación dentro del rango del bloque seleccionado
-  const winningItemRotaion = getRandomInt(minDegrees, maxDegrees) + modifier;
-
-  modifier += 360 * 10; // Aseguramos acumulación de vueltas completas
-  console.log(`Rotación calculada: ${winningItemRotaion}`); // Mostrar en consola
-  
-
-  // Simulación del giro (aquí integras la lógica gráfica de tu ruleta)
-  // por ahora, solo devolvemos los valores
-  return { duration, winningItemRotaion };
-}
-
-// Función para obtener un número aleatorio dentro de un rango
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
-function initImage(obj, pName) {
-  if (!obj[pName]) return null;
-  const i = new Image();
-  i.src = obj[pName];
-  obj[pName] = i;
-  return i;
-} 
-/*
-if (window.location.pathname.includes('control.html')) {
-  const blockSelector = document.getElementById('blockSelector');
-  // Actualizar `localStorage` automáticamente al cambiar la selección
-  blockSelector.addEventListener('change', (event) => {
-    localStorage.setItem('selectedBlock', event.target.value); // Guardar selección
-    console.log(`Bloque actualizado a: ${event.target.value}`);
-  });
-
-  // Establecer el valor predeterminado desde `localStorage`
-  blockSelector.value = localStorage.getItem('selectedBlock') || '1';
-}
-*/
-  // funciones para el sonido
-
+  // Mostrar u ocultar la interfaz según la posición del mouse
   document.addEventListener('mousemove', function (e) {
     const guiWrapper = document.querySelector('.gui-wrapper');
-  
+
     // Mostrar la barra si el mouse está en la parte superior (dentro de los primeros 50px)
     if (e.clientY < 50) {
       guiWrapper.classList.add('visible');
