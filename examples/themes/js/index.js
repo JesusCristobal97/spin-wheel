@@ -138,7 +138,7 @@ window.onload = async () => {
     isDecelerating = true;
 
     // Detener el sonido de giro
-    spinSound.pause();
+    //spinSound.pause();
     spinSound.currentTime = 0;
 
     // Quitar clase 'pressed' del botón
@@ -148,8 +148,9 @@ window.onload = async () => {
     document.querySelector('.wheel-wrapper').classList.remove('vibrate');
 
     // Obtener la rotación objetivo dentro del bloque seleccionado
-    const { winningItemRotation } = calcSpinToValues();
+    //const { winningItemRotation } = calcSpinToValues();
 
+    var winningItemRotation = document.getElementById("txtRotation").value;
     // Calcular la rotación objetivo agregando rotaciones completas para un mejor efecto
     const decelerationRotations = 3; // Número de rotaciones completas durante la desaceleración
     const currentRotationMod = rotationAngle % 360;
@@ -195,9 +196,11 @@ window.onload = async () => {
       isDecelerating = false;
 
       // Reproducir sonidos de finalización
-      finishSound2.play();
-      finishSound2.onended = () => {
+        spinSound.pause();
+        finishSound2.play(); 
+        finishSound2.onended = () => {
         finishSound1.play();
+
       };
     }
   }
