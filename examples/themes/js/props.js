@@ -4,7 +4,7 @@ export const props = [
 
   {
     name: 'Movies',
-    radius: 0.88,
+    radius: 0.88,  
     itemLabelRadius: 0.92,
     itemLabelRadiusMax: 0.4,
     itemLabelRotation: 0,
@@ -19,52 +19,28 @@ export const props = [
     overlayImage: './img/example-2-overlay.svg',
     items: [
       {
-        label: 'Action',
+        label:'sampling Deluxe'
       },
       {
-        label: 'Horror',
+        label: 'sampling normal',
       },
       {
-        label: 'Science Fict.',
+        label: 'Bolas ',  
       },
       {
-        label: 'Comedy',
+        label: 'Tarjeta Regalo',
       },
       {
-        label: 'Romance',
+        label:'sampling Deluxe'
       },
       {
-        label: 'Thriller',
+        label: 'sampling normal',
       },
       {
-        label: 'Western',
+        label: 'Bolas ',  
       },
       {
-        label: 'Indie',
-      },
-      {
-        label: 'Crime',
-      },
-      {
-        label: 'Documentary',
-      },
-      {
-        label: 'Drama',
-      },
-      {
-        label: 'Musical',
-      },
-      {
-        label: 'Mystery',
-      },
-      {
-        label: 'War',
-      },
-      {
-        label: 'Sports',
-      },
-      {
-        label: 'Fantasy',
+        label: 'Tarjeta Regalo',
       },
     ],
   },

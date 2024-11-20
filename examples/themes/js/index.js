@@ -1,7 +1,6 @@
 import { Wheel } from '../../../dist/spin-wheel-esm.js';
 import { loadFonts, loadImages } from '../../../scripts/util.js';
-import { props } from './props.js';
-
+import { props } from './props.js'; 
 // Audios
 const spinSound = new Audio('./sounds/rulete.mp3');
 const finishSound1 = new Audio('./sounds/winner1.wav');
@@ -9,6 +8,22 @@ const finishSound2 = new Audio('./sounds/finish.wav');
 const buttonSound = new Audio('./sounds/botonsound.wav'); // Sonido del botón
 
 window.onload = async () => {
+ 
+  const loadGetDataBase = async () => {
+    try {
+      const response = await fetch('./database/getDataBase.json'); 
+      if (!response.ok) {
+        throw new Error(`Error al cargar el JSON: ${response.status} ${response.statusText}`);
+      }
+      const getDataBase = await response.json();
+      console.log("getDataBase ", getDataBase);
+    } catch (error) {
+      console.error("Error cargando el JSON:", error);
+    }
+  };
+  
+  await loadGetDataBase();
+  
   await loadFonts(props.map(i => i.itemLabelFont));
 
   const wheel = new Wheel(document.querySelector('.wheel-wrapper'));
@@ -29,7 +44,7 @@ window.onload = async () => {
       images.push(initImage(item, 'image'));
     }
   }
-
+  console.log("images ", images);
   await loadImages(images);
 
   // Mostrar la ruleta una vez que todo haya cargado
@@ -40,6 +55,7 @@ window.onload = async () => {
     wheel.init({
       ...props[dropdown.selectedIndex],
       rotation: wheel.rotation, // Preservar el valor de rotación actual
+
     });
   };
 
@@ -148,9 +164,9 @@ window.onload = async () => {
     document.querySelector('.wheel-wrapper').classList.remove('vibrate');
 
     // Obtener la rotación objetivo dentro del bloque seleccionado
-    //const { winningItemRotation } = calcSpinToValues();
+    const { winningItemRotation } = calcSpinToValues();
 
-    var winningItemRotation = document.getElementById("txtRotation").value;
+   // var winningItemRotation = document.getElementById("txtRotation").value;
     // Calcular la rotación objetivo agregando rotaciones completas para un mejor efecto
     const decelerationRotations = 3; // Número de rotaciones completas durante la desaceleración
     const currentRotationMod = rotationAngle % 360;
@@ -244,9 +260,12 @@ window.onload = async () => {
     if (!obj[pName]) return null;
     const i = new Image();
     i.src = obj[pName];
+    i.height = 40;
+    i.width = 40; 
     obj[pName] = i;
     return i;
   }
+
 
   // Mostrar u ocultar la interfaz según la posición del mouse
   document.addEventListener('mousemove', function (e) {
@@ -259,4 +278,6 @@ window.onload = async () => {
       guiWrapper.classList.remove('visible');
     }
   });
+
+
 };

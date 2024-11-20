@@ -58,11 +58,20 @@ window.onload = () => {
       {
         label: '4',
       },
+      {
+        label: '5',
+      },
+      {
+        label: '6',
+      },
+      {
+        label: '7',
+      }
     ],
     itemLabelFontSizeMax: 40,
     radius: 0.4,
     isInteractive: false,
-    rotation: WHEEL_2_INITIAL_ROTATION,
+    rotation: 0,
     onRest: e => console.log(e),
   };
 

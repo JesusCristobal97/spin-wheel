@@ -1,9 +1,10 @@
 import {Wheel} from '../../../dist/spin-wheel-esm.js';
-
+import { loadFonts, loadImages } from '../../../scripts/util.js';
 const props = {
   items: [
     {
-      label: 'one',
+      label: 'one xd' ,
+      image: 'https://purepng.com/public/uploads/large/purepng.com-super-mariomariosuper-mariovideo-gamefictional-characternintendoshigeru-miyamotomario-franchise-17015286383789a9am.png'
     },
     {
       label: 'two',
@@ -27,3 +28,6 @@ window.wheel = new Wheel(container, props);
 wheel.onCurrentIndexChange = e => console.log(e);
 wheel.onRest = e => console.log(e);
 wheel.onSpin = e => console.log(e);
+
+
+ 

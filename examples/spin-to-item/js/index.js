@@ -1,5 +1,8 @@
 import {Wheel} from '../../../dist/spin-wheel-esm.js';
+import { loadFonts, loadImages } from '../../../scripts/util.js';
+
 import * as easing from '../../../scripts/easing.js';
+ 
 
 window.onload = () => {
 
@@ -11,44 +14,39 @@ window.onload = () => {
   const btnSpin = document.querySelector('.gui-wrapper .btn-spin');
   const btnStop = document.querySelector('.gui-wrapper .btn-stop');
 
-  const props = {
-    debug: true, // So we can see pointer angle.
+  const props = { 
+    
     items: [
       {
-        label: 'Dog',
-        weight: 6,
+        label:'sampling Deluxe' 
       },
       {
-        label: 'Cat',
-        weight: 4.9,
+        label: 'sampling normal',
       },
       {
-        label: 'Fish',
-        weight: 4.1,
+        label: 'Bolas ',  
       },
       {
-        label: 'Rabbit',
-        weight: 3.7,
+        label: 'Tarjeta Regalo',
       },
       {
-        label: 'Bird',
-        weight: 3,
+        label:'sampling Deluxe'
       },
       {
-        label: 'Chicken',
-        weight: 2.8,
+        label: 'sampling normal',
       },
       {
-        label: 'Lizard',
-        weight: 2.5,
+        label: 'Bolas ',  
       },
       {
-        label: 'Turtle',
-        weight: 1,
+        label: 'Tarjeta Regalo',
       },
     ],
     itemLabelRadiusMax: 0.5,
   };
+
+  const images = [];
+
 
   const easingFunctions = [
     {
@@ -76,6 +74,10 @@ window.onload = () => {
       function: easing.bounceOut,
     },
   ];
+
+  //props.overlayImage= '../img/example-2-overlay.svg',
+  props.itemBackgroundColors = ['#c7160c', '#fff'],
+  props.itemLabelColors = ['#fff', '#000'],
 
   window.wheel = new Wheel(container, props);
 
