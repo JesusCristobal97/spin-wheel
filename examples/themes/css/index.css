@@ -19,7 +19,7 @@ html, body {
 body {
   /* Prevent pull-down-to-refresh gesture */
   overscroll-behavior-y: contain;
-  background-image: url('../img/ruleta-2.jpg'); /* Ruta de tu imagen de fondo */
+  background-image: url('../img/Fondo-Ruleta.png'); /* Ruta de tu imagen de fondo */
   background-size: cover;
   background-position: center;
   background-attachment: fixed;

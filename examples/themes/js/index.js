@@ -52,6 +52,7 @@ window.onload = async () => {
 
   // Manejar el cambio en el dropdown
   dropdown.onchange = () => {
+    console.log(props[dropdown.selectedIndex]);
     wheel.init({
       ...props[dropdown.selectedIndex],
       rotation: wheel.rotation, // Preservar el valor de rotación actual
@@ -66,6 +67,7 @@ window.onload = async () => {
   // Guardar el objeto wheel globalmente para depuración
   window.wheel = wheel;
 
+  wheel.pointerAngle = 20;
   // Referencia al botón START
   const btnSpin = document.querySelector('#btnStart');
 
@@ -74,7 +76,7 @@ window.onload = async () => {
   let isDecelerating = false;
   let rotationSpeed = 0;
   let rotationAngle = wheel.rotation || 0; // Obtener rotación actual o iniciar en 0
-  const maxRotationSpeed = 20; // Velocidad máxima de rotación
+  const maxRotationSpeed =  20; // Velocidad máxima de rotación
   let spinAnimationFrame;
   let targetRotation = 0;
   let decelerationStartRotation = 0;
@@ -84,6 +86,8 @@ window.onload = async () => {
   // Escuchar la tecla Espacio para iniciar y detener el giro
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && !isSpinning && !isDecelerating) {
+      console.log("isSpinning" , isSpinning);
+      console.log("isDecelerating" , isDecelerating);
       e.preventDefault();
       startSpin();
     }
@@ -91,6 +95,7 @@ window.onload = async () => {
 
   document.addEventListener('keyup', (e) => {
     if (e.code === 'Space' && isSpinning) {
+      console.log("isSpinning" , isSpinning); 
       e.preventDefault();
       stopSpin();
     }
@@ -133,42 +138,32 @@ window.onload = async () => {
   // Función para rotar la ruleta continuamente
   function rotateWheel() {
     if (!isSpinning) return;
-
-    // Aumentar la velocidad hasta el máximo
+ 
     if (rotationSpeed < maxRotationSpeed) {
-      rotationSpeed += 0.5; // Ajusta la aceleración según sea necesario
+      rotationSpeed += 0.5;  
     }
-
-    // Actualizar el ángulo de rotación
+ 
     rotationAngle = (rotationAngle + rotationSpeed) % 360;
     wheel.rotation = rotationAngle;
     wheel.draw();
-
-    // Continuar la animación
+ 
     spinAnimationFrame = requestAnimationFrame(rotateWheel);
   }
-
-  // Función para detener el giro y desacelerar
+ 
   function stopSpin() {
     isSpinning = false;
-    isDecelerating = true;
-
-    // Detener el sonido de giro
-    //spinSound.pause();
+    isDecelerating = false;
+ 
     spinSound.currentTime = 0;
-
-    // Quitar clase 'pressed' del botón
+ 
     btnSpin.classList.remove('pressed');
-
-    // Quitar la clase 'vibrate' para detener el efecto visual
+ 
     document.querySelector('.wheel-wrapper').classList.remove('vibrate');
-
-    // Obtener la rotación objetivo dentro del bloque seleccionado
+ 
     const { winningItemRotation } = calcSpinToValues();
 
-   // var winningItemRotation = document.getElementById("txtRotation").value;
-    // Calcular la rotación objetivo agregando rotaciones completas para un mejor efecto
-    const decelerationRotations = 3; // Número de rotaciones completas durante la desaceleración
+ 
+    const decelerationRotations = 3;  
     const currentRotationMod = rotationAngle % 360;
     const angleDifference = (winningItemRotation - currentRotationMod + 360) % 360;
     targetRotation = rotationAngle + angleDifference + decelerationRotations * 360;
@@ -189,6 +184,8 @@ window.onload = async () => {
 
   // Función para desacelerar y detener la ruleta suavemente
   function decelerateWheel(timestamp) {
+    wheel.spinToItem(1, 1500,true,6,1,null);
+   
     if (!isDecelerating) return;
 
     if (!decelerationStartTime) {
@@ -199,18 +196,14 @@ window.onload = async () => {
     const progress = Math.min(elapsed / decelerationDuration, 1); // Asegurarse de que no exceda 1
     const easedProgress = easeOutCubic(progress);
 
-    // Calcular la rotación actual
-    rotationAngle = decelerationStartRotation + (targetRotation - decelerationStartRotation) * easedProgress;
-    wheel.rotation = rotationAngle % 360;
-    wheel.draw();
+  
 
     if (progress < 1) {
       // Continuar la animación
-      spinAnimationFrame = requestAnimationFrame(decelerateWheel);
+      //spinAnimationFrame = requestAnimationFrame(decelerateWheel);
     } else {
       // Desaceleración completa
       isDecelerating = false;
-
       // Reproducir sonidos de finalización
         spinSound.pause();
         finishSound2.play(); 

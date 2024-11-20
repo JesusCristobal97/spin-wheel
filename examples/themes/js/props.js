@@ -11,12 +11,12 @@ export const props = [
     itemLabelAlign: AlignText.right,
     itemLabelBaselineOffset: -0.13,
     itemLabelFont: 'Pragati Narrow',
-    itemBackgroundColors: ['#c7160c', '#fff'],
+    itemBackgroundColors: ['#f085be', '#fff'],
     itemLabelColors: ['#fff', '#000'],
     rotationSpeedMax: 700,
     rotationResistance: -70,
     lineWidth: 0,
-    overlayImage: './img/example-2-overlay.svg',
+    overlayImage: './img/Imagen1-removebg.png',
     items: [
       {
         label:'sampling Deluxe'

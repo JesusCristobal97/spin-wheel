@@ -251,6 +251,7 @@
     ]
   },
   "dependencies": {
+    "firebase": "^11.0.2",
     "spin-wheel": "^5.0.2"
   }
 }
