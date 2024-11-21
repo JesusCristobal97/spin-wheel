@@ -19,7 +19,7 @@ export const props = [
     rotationSpeedMax: 700,
     rotationResistance: -70,
     lineWidth: 0,
-    overlayImage: './img/sephorav2.png',
+    overlayImage: './img/sephorav3.png',
     items: [
       {
         label:'REGALO ESPECIAL'
