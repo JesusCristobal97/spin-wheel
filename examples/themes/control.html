@@ -1,47 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <title>Seleccionar Bloque</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <style>
- 
-  </style>
-  <script>
-    // Añadir un evento para capturar el cambio del select
-    document.addEventListener('DOMContentLoaded', () => {
-  const blockSelector = document.getElementById('blockSelector');
-  blockSelector.addEventListener('change', (event) => {
-    localStorage.setItem('selectedBlock', event.target.value);
-    console.log(`Bloque actualizado a: ${event.target.value}`);
-  });
-
-  // Establece el valor predeterminado
-  blockSelector.value = localStorage.getItem('selectedBlock') || '1';
-});
-  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario Dinámico</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+<body>
+  <div class="container mt-5">
+    <h3 class="mb-4">Formulario Dinámico</h3>
+    <form id="jsonForm">
+      <!-- Sección de pelotas (balls) -->
+      <h5>Días y Contadores (Balls)</h5>
+      <div id="ballsSection" class="row"></div>
 
-<body> 
-  <div class="container">
-    <form>
-      <div class="form-group row">
-        <label for="staticEmail" class="col-sm-2 col-form-label">Evento</label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" id="inputPassword" placeholder="Password">
+      <!-- Sección de regalos (gifts) -->
+      <h5 class="mt-4">Regalos (Gifts)</h5>
+      <div id="giftsSection" class="row"></div>
 
-        </div>
-      </div>
-      <div class="form-group row">
-        <label for="inputPassword" class="col-sm-2 col-form-label">Fecha de inicio y fin</label>
-        <div class="col-sm-10">
-          <input type="password" class="form-control" id="inputPassword" placeholder="Password">
-        </div>
-      </div>
+      <button type="submit" class="btn btn-primary mt-3">Guardar</button>
     </form>
   </div>
-</body>
 
+  <script>
+    const jsonData = {
+      "balls": [
+        { "day": "21-11-2024", "count": 5 },
+        { "day": "27-11-2024", "count": 0 },
+        { "day": "29-11-2024", "count": 0 },
+        { "day": "30-11-2024", "count": 0 },
+        { "day": "7-12-2024", "count": 0 },
+        { "day": "13-12-2024", "count": 0 },
+        { "day": "14-12-2024", "count": 0 },
+        { "day": "21-12-2024", "count": 0 },
+        { "day": "27-12-2024", "count": 0 },
+        { "day": "28-12-2024", "count": 0 },
+        { "day": "03-01-2025", "count": 0 },
+        { "day": "04-01-2025", "count": 0 }
+      ],
+      "gifts": ["15-12-2024", "25-12-2024"]
+    };
+
+    // Renderizar sección de pelotas (balls)
+    const ballsSection = document.getElementById('ballsSection');
+    jsonData.balls.forEach((item, index) => {
+      const dayCol = document.createElement('div');
+      dayCol.className = 'col-md-6 form-group';
+
+      const dayLabel = document.createElement('label');
+      dayLabel.innerText = `Día ${index + 1}`;
+      const dayInput = document.createElement('input');
+      dayInput.type = 'text';
+      dayInput.className = 'form-control';
+      dayInput.value = item.day;
+      dayInput.readOnly = true; // Para que sea solo de lectura
+
+      dayCol.appendChild(dayLabel);
+      dayCol.appendChild(dayInput);
+
+      const countCol = document.createElement('div');
+      countCol.className = 'col-md-6 form-group';
+
+      const countLabel = document.createElement('label');
+      countLabel.innerText = `Contador ${index + 1}`;
+      const countInput = document.createElement('input');
+      countInput.type = 'number';
+      countInput.className = 'form-control';
+      countInput.value = item.count;
+
+      countCol.appendChild(countLabel);
+      countCol.appendChild(countInput);
+
+      ballsSection.appendChild(dayCol);
+      ballsSection.appendChild(countCol);
+    });
+
+    // Renderizar sección de regalos (gifts)
+    const giftsSection = document.getElementById('giftsSection');
+    jsonData.gifts.forEach((gift, index) => {
+      const giftCol = document.createElement('div');
+      giftCol.className = 'col-md-6 form-group';
+
+      const giftLabel = document.createElement('label');
+      giftLabel.innerText = `Regalo ${index + 1}`;
+      const giftInput = document.createElement('input');
+      giftInput.type = 'text';
+      giftInput.className = 'form-control';
+      giftInput.value = gift;
+
+      giftCol.appendChild(giftLabel);
+      giftCol.appendChild(giftInput);
+
+      giftsSection.appendChild(giftCol);
+    });
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 </html>

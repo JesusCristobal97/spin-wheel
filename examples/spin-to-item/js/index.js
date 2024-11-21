@@ -32,7 +32,7 @@ window.onload = async() => {
         label: 'Bolas ',  
       },
       {
-        label: 'Tarjeta Regalo',
+        label: 'Tarjeta Regalo sssss',
       },
       {
         label:'sampling Deluxe'
@@ -86,7 +86,8 @@ window.onload = async() => {
   //#endregion
 
   //#region props for color items
- 
+  props.itemLabelFontSizeMax = 40;
+  props.itemLabelFontSize = 50;
   props.itemBackgroundColors = ['#c7160c', '#fff'],
   props.itemLabelColors = ['#fff', '#000'],
   //#endregion

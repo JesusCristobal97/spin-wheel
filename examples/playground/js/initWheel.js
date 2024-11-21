@@ -7,7 +7,7 @@ const props = {
       image: 'https://purepng.com/public/uploads/large/purepng.com-super-mariomariosuper-mariovideo-gamefictional-characternintendoshigeru-miyamotomario-franchise-17015286383789a9am.png'
     },
     {
-      label: 'two',
+      label: 'two sasas sssss ',
     },
     {
       label: 'three',
