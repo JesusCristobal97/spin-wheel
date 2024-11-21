@@ -86,6 +86,7 @@ window.onload = async() => {
   //#endregion
 
   //#region props for color items
+ 
   props.itemBackgroundColors = ['#c7160c', '#fff'],
   props.itemLabelColors = ['#fff', '#000'],
   //#endregion

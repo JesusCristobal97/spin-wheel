@@ -1,10 +1,16 @@
 {
-    "gift" : [],
+    "options": ["REGALO ESPECIAL","MUESTRA","PRUEBA OTRA VEZ","TARJETA DE REGALO","MUESTRA","MUESTRA DELUXE",
+                "MUESTRA","PRUEBA OTRA VEZ","MUESTRA DELUXE"],
+    "gifts" : [],
     "balls" : [
+        {
+            "day" : "21-11-2024",
+            "count" : 0
+        }   ,
         {
             "day" : "27-11-2024",
             "count" : 0
-        }   ,
+        },
         {
             "day" : "29-11-2024",
             "count" : 0

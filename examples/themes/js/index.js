@@ -4,25 +4,111 @@ import { props } from './props.js';
 // Audios
 const spinSound = new Audio('./sounds/rulete.mp3');
 const finishSound1 = new Audio('./sounds/winner1.wav');
+const finishWinner= new Audio('./sounds/winner.wav');
 const finishSound2 = new Audio('./sounds/finish.wav');
 const buttonSound = new Audio('./sounds/botonsound.wav'); // Sonido del botón
 
 window.onload = async () => {
  
-  const loadGetDataBase = async () => {
-    try {
-      const response = await fetch('./database/getDataBase.json'); 
-      if (!response.ok) {
-        throw new Error(`Error al cargar el JSON: ${response.status} ${response.statusText}`);
-      }
-      const getDataBase = await response.json();
-      console.log("getDataBase ", getDataBase);
-    } catch (error) {
-      console.error("Error cargando el JSON:", error);
-    }
-  };
+  var configBase = {} ;
   
-  await loadGetDataBase();
+  const generateLocalStorage = async () => {
+    var localConfigBase = localStorage.getItem("configBase");
+    if(localConfigBase != null){
+      configBase = JSON.parse(localConfigBase);
+    }else{
+      try {
+        const response = await fetch('./database/getDataBase.json'); 
+        if (!response.ok) {
+          throw new Error(`Error al cargar el JSON: ${response.status} ${response.statusText}`);
+        }
+        const getDataBase = await response.json();
+        configBase = getDataBase; 
+        localStorage.setItem("configBase", JSON.stringify(configBase)); 
+
+      } catch (error) {
+        console.error("Error cargando el JSON:", error);
+      }
+    }
+  }
+  
+  
+  await generateLocalStorage();
+ 
+  const  fetchWinningItemIndexFromApi =  () => {
+    
+    var options = configBase.options;
+    var random = getRandomOption(options.length);
+    var option = options[random];
+    console.log("random ", random);
+    console.log("option ", option);
+    
+    switch(option){
+      case "Sampling Deluxe":
+        break;
+      case "Sampling Normal":
+        break;
+      case "REGALO ESPECIAL":
+        random = comprobeBalls(random);
+        break;
+      case "TARJETA DE REGALO":
+        random = comprobeGifts(random);
+        break;
+
+
+    } 
+    return random;
+  }
+
+
+  function comprobeBalls(option) {
+    const now = new Date();
+    const day = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
+    
+    let isDay = false; 
+    const ballsDays = configBase.balls || [];  
+   
+    for (let index = 0; index < ballsDays.length; index++) {
+      const ball = ballsDays[index]; 
+  
+      if (ball.day === day && ball.count < 10) {  
+        ball.count++; 
+        isDay = true;
+        break;  
+      }
+    }
+   
+    if (!isDay) {
+      return option - 1;  
+    }
+    saveInformation();
+    console.log("configbase" , configBase);
+    return option;
+  }
+
+ 
+  function comprobeGifts(option) {
+    const gifts = configBase.gifts || []; 
+    const now = new Date();
+    const day = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
+  
+    if (gifts.includes(day)) {
+      return option + 1;  
+    } else { 
+      configBase.gifts.push(day);
+      console.log(`Día ${day} agregado a gifts`);
+    }
+    console.log(configBase);
+    
+    saveInformation();
+    return option;
+  }
+
+
+  function saveInformation(){
+    localStorage.setItem("configBase", JSON.stringify(configBase));
+    configBase = JSON.parse(localStorage.getItem("configBase"));
+  }
   
   await loadFonts(props.map(i => i.itemLabelFont));
 
@@ -67,35 +153,30 @@ window.onload = async () => {
   // Guardar el objeto wheel globalmente para depuración
   window.wheel = wheel;
 
-  wheel.pointerAngle = 20;
   // Referencia al botón START
   const btnSpin = document.querySelector('#btnStart');
 
   // Variables para controlar el giro
   let isSpinning = false;
+  let spinAnimationFrame;
   let isDecelerating = false;
   let rotationSpeed = 0;
   let rotationAngle = wheel.rotation || 0; // Obtener rotación actual o iniciar en 0
   const maxRotationSpeed =  20; // Velocidad máxima de rotación
-  let spinAnimationFrame;
-  let targetRotation = 0;
-  let decelerationStartRotation = 0;
-  let decelerationDuration = 0;
+  
   let decelerationStartTime = 0;
 
   // Escuchar la tecla Espacio para iniciar y detener el giro
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && !isSpinning && !isDecelerating) {
-      console.log("isSpinning" , isSpinning);
-      console.log("isDecelerating" , isDecelerating);
       e.preventDefault();
       startSpin();
     }
   });
 
   document.addEventListener('keyup', (e) => {
-    if (e.code === 'Space' && isSpinning) {
-      console.log("isSpinning" , isSpinning); 
+    if (e.code === 'Space' && isSpinning) { 
+
       e.preventDefault();
       stopSpin();
     }
@@ -116,26 +197,20 @@ window.onload = async () => {
 
   // Función para iniciar el giro
   function startSpin() {
+
     isSpinning = true;
     isDecelerating = false;
     rotationSpeed = 0;
-
-    // Reproducir sonidos
+ 
+    btnSpin.classList.add('pressed');
     spinSound.play();
     spinSound.loop = true;
     buttonSound.play();
-
-    // Añadir clase 'pressed' para efecto visual
-    btnSpin.classList.add('pressed');
-
-    // Añadir clase 'vibrate' para efecto visual en la ruleta
     document.querySelector('.wheel-wrapper').classList.add('vibrate');
-
-    // Iniciar la animación de rotación
+ 
     spinAnimationFrame = requestAnimationFrame(rotateWheel);
   }
-
-  // Función para rotar la ruleta continuamente
+ 
   function rotateWheel() {
     if (!isSpinning) return;
  
@@ -155,48 +230,37 @@ window.onload = async () => {
     isDecelerating = false;
  
     spinSound.currentTime = 0;
- 
     btnSpin.classList.remove('pressed');
- 
     document.querySelector('.wheel-wrapper').classList.remove('vibrate');
- 
-    const { winningItemRotation } = calcSpinToValues();
 
- 
-    const decelerationRotations = 3;  
-    const currentRotationMod = rotationAngle % 360;
-    const angleDifference = (winningItemRotation - currentRotationMod + 360) % 360;
-    targetRotation = rotationAngle + angleDifference + decelerationRotations * 360;
-
-    // Guardar valores para la interpolación
-    decelerationStartRotation = rotationAngle;
-    decelerationDuration = 4000; // Duración de la desaceleración en milisegundos
     decelerationStartTime = null;
 
     // Iniciar la desaceleración
-    spinAnimationFrame = requestAnimationFrame(decelerateWheel);
+   spinAnimationFrame = requestAnimationFrame(decelerateWheel);
   }
 
-  // Función de easing (suavizado) cúbica
-  function easeOutCubic(t) {
-    return 1 - Math.pow(1 - t, 3);
-  }
+   
 
   // Función para desacelerar y detener la ruleta suavemente
   function decelerateWheel(timestamp) {
-    wheel.spinToItem(1, 1500,true,6,1,null);
-   
+    const itemSelect = fetchWinningItemIndexFromApi();
+    console.log("itemSelect ",itemSelect );
+    wheel.spinToItem(itemSelect, 1500,true,6,1,null);
+        finishSound2.play();  
+        finishSound2.volume = 0;
+
+        finishSound2.onended = () => {
+          spinSound.pause(); 
+          finishWinner.play();
+
+      };
     if (!isDecelerating) return;
 
     if (!decelerationStartTime) {
       decelerationStartTime = timestamp;
     }
-
-    const elapsed = timestamp - decelerationStartTime;
-    const progress = Math.min(elapsed / decelerationDuration, 1); // Asegurarse de que no exceda 1
-    const easedProgress = easeOutCubic(progress);
-
-  
+ 
+ 
 
     if (progress < 1) {
       // Continuar la animación
@@ -205,50 +269,16 @@ window.onload = async () => {
       // Desaceleración completa
       isDecelerating = false;
       // Reproducir sonidos de finalización
-        spinSound.pause();
-        finishSound2.play(); 
-        finishSound2.onended = () => {
-        finishSound1.play();
-
-      };
+        
+ 
     }
   }
 
-  // Función para calcular los valores de giro según el bloque seleccionado
-  function calcSpinToValues() {
-    const selectedBlock = localStorage.getItem('selectedBlock') || '1';
-
-    let minDegrees, maxDegrees;
-
-    // Determinar los rangos según el bloque seleccionado
-    if (selectedBlock === '1') {
-      minDegrees = 0;
-      maxDegrees = 90;
-    } else if (selectedBlock === '2') {
-      minDegrees = 90;
-      maxDegrees = 180;
-    } else if (selectedBlock === '3') {
-      minDegrees = 180;
-      maxDegrees = 270;
-    } else if (selectedBlock === '4') {
-      minDegrees = 270;
-      maxDegrees = 360;
-    }
-
-    // Generar rotación dentro del rango del bloque seleccionado
-    const winningItemRotation = getRandomInt(minDegrees, maxDegrees);
-
-    console.log(`Rotación calculada: ${winningItemRotation}`); // Mostrar en consola
-
-    return { winningItemRotation };
+  function getRandomOption(max) {
+    return Math.floor(Math.random() * max);
   }
-
-  // Función para obtener un número aleatorio dentro de un rango
-  function getRandomInt(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  // Función para inicializar imágenes
+  
+    
   function initImage(obj, pName) {
     if (!obj[pName]) return null;
     const i = new Image();
@@ -259,8 +289,7 @@ window.onload = async () => {
     return i;
   }
 
-
-  // Mostrar u ocultar la interfaz según la posición del mouse
+ 
   document.addEventListener('mousemove', function (e) {
     const guiWrapper = document.querySelector('.gui-wrapper');
 

@@ -4,43 +4,48 @@ export const props = [
 
   {
     name: 'Movies',
-    radius: 0.88,  
+    radius: 0.92,  
+    borderWidth:14,
+    borderColor:"#c00244",
     itemLabelRadius: 0.92,
     itemLabelRadiusMax: 0.4,
     itemLabelRotation: 0,
     itemLabelAlign: AlignText.right,
     itemLabelBaselineOffset: -0.13,
-    itemLabelFont: 'Pragati Narrow',
-    itemBackgroundColors: ['#f085be', '#fff'],
-    itemLabelColors: ['#fff', '#000'],
+    itemLabelFont: 'FuturaMed',
+    itemBackgroundColors: ['#000', '#fff','#ce0058'],
+    itemLabelColors: ['#fff', '#000','#fff'],
     rotationSpeedMax: 700,
     rotationResistance: -70,
     lineWidth: 0,
-    overlayImage: './img/Imagen1-removebg.png',
+    overlayImage: './img/sephorav2.png',
     items: [
       {
-        label:'sampling Deluxe'
+        label:'REGALO ESPECIAL'
       },
       {
-        label: 'sampling normal',
+        label: 'MUESTRA',  
       },
       {
-        label: 'Bolas ',  
+        label: 'PRUEBA OTRA VEZ',
+      }, 
+      {
+        label: 'TARJETA DE REGALO',
       },
       {
-        label: 'Tarjeta Regalo',
+        label:'MUESTRA'
       },
       {
-        label:'sampling Deluxe'
+        label:'MUESTRA DELUXE'
       },
       {
-        label: 'sampling normal',
+        label: 'MUESTRA',  
       },
       {
-        label: 'Bolas ',  
-      },
+        label: 'PRUEBA OTRA VEZ',
+      }, 
       {
-        label: 'Tarjeta Regalo',
+        label: 'MUESTRA DELUXE',
       },
     ],
   },
