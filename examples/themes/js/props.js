@@ -25,13 +25,13 @@ export const props = [
         label:'REGALO ESPECIAL'
       },
       {
-        label: 'MUESTRA',  
+        label: 'MUESTRA       ',  
       },
       {
         label: 'PRUEBA OTRA VEZ',
       }, 
       {
-        label: 'TARJETA DE REGALO',
+        label: 'TARJETA REGALO',
       },
       {
         label:'MUESTRA'
@@ -40,7 +40,7 @@ export const props = [
         label:'MUESTRA DELUXE'
       },
       {
-        label: 'MUESTRA',  
+        label: 'MUESTRA       ',  
       },
       {
         label: 'PRUEBA OTRA VEZ',

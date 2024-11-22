@@ -51,7 +51,7 @@ window.onload = async () => {
       case "REGALO ESPECIAL":
         random = comprobeBalls(random);
         break;
-      case "TARJETA DE REGALO":
+      case "TARJETA REGALO":
         random = comprobeGifts(random);
         break;
 
@@ -71,7 +71,7 @@ window.onload = async () => {
     for (let index = 0; index < ballsDays.length; index++) {
       const ball = ballsDays[index]; 
   
-      if (ball.day === day && ball.count < 10) {  
+      if (ball.day === day && ball.count < ball.max) {  
         ball.count++; 
         isDay = true;
         break;  

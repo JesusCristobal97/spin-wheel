@@ -1,54 +1,66 @@
 {
-    "options": ["REGALO ESPECIAL","MUESTRA","PRUEBA OTRA VEZ","TARJETA DE REGALO","MUESTRA","MUESTRA DELUXE",
+    "options": ["REGALO ESPECIAL","MUESTRA","PRUEBA OTRA VEZ","TARJETA REGALO","MUESTRA","MUESTRA DELUXE",
                 "MUESTRA","PRUEBA OTRA VEZ","MUESTRA DELUXE"],
     "gifts" : [],
     "balls" : [
         {
             "day" : "21-11-2024",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         }   ,
         {
             "day" : "27-11-2024",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         },
         {
             "day" : "29-11-2024",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         },
         {
             "day" : "30-11-2024",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         },
         {
             "day" : "7-12-2024",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         },
         {
             "day" : "13-12-2024",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         },
         {
             "day" : "14-12-2024",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         },
         {
             "day" : "21-12-2024",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         },
         {
             "day" : "27-12-2024",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         },
         {
             "day" : "28-12-2024",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         },
         {
             "day" : "03-01-2025",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         },
         {
             "day" : "04-01-2025",
-            "count" : 0
+            "count" : 0,
+            "max" : 100
         }]
 }
