@@ -34,7 +34,7 @@ export const props = [
         label: 'TARJETA REGALO',
       },
       {
-        label:'MUESTRA'
+        label:'MUESTRA       '
       },
       {
         label:'MUESTRA DELUXE'
