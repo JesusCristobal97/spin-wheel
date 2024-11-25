@@ -9,9 +9,36 @@
 <body>
   <div class="container mt-5">
     <h3 class="mb-4">Configurador</h3>
-    <h5>Cantidad máxima de REGALO ESPECIAL</h5>
-      <div class="container" id="divBalls">
-      
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-4">  
+            <select id="cboConfig" class="form-control">
+              <option value="99">Seleccione</option>
+              <option value="0">Regalo especial</option>
+              <option value="1">Muestra</option>
+              <option value="2">Prueba otra vez</option>
+              <option value="3">Tarjeta regalo</option>
+              <option value="4">Muestra</option>
+              <option value="5">Muestra deluxe</option>
+              <option value="6">Muestra</option>
+              <option value="7">Prueba otra vez </option>
+              <option value="8">Muestra deluxe</option>
+            </select>
+          </div>
+          <div class="col-sm-2">  
+            <input type="button" value="Borra test" onclick="deleteTest();" class="btn btn-danger" />
+          </div>
+          <div class="col-sm-2">  
+            <input type="button" value="Guardar test" onclick="saveTest();" class="btn btn-info" />
+          </div>
+      </div>
+      </div>
+    <br />
+      <div>
+        <h5>Cantidad máxima de REGALO ESPECIAL</h5>
+        <div class="container" id="divBalls">
+        
+        </div>
       </div>
       <div class="container">
           <input type="button" class="btn btn-success" onclick="saveJsonData();" value="Guardar" />
@@ -59,6 +86,13 @@
       loadFieldsGifts();
     };
 
+    function  saveTest(){
+      var testItem = $("#cboConfig").val();
+      localStorage.setItem("testConfig",testItem );
+    }
+    function deleteTest(){
+      localStorage.removeItem("testConfig");
+    }
 
     function loadFieldsJSON() {
       $("#divBalls").empty();

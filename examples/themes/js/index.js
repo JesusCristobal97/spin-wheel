@@ -39,7 +39,17 @@ window.onload = async () => {
   const  fetchWinningItemIndexFromApi =  () => {
     
     var options = configBase.options;
-    var random = getRandomOption(options.length);
+    var random = 0;
+    
+    var testConfig = localStorage.getItem("testConfig");
+
+    if(testConfig != null){
+      random = parseInt(testConfig);
+    }else{
+      random = getRandomOption(options.length);
+    }
+    
+    //
     var option = options[random];
     console.log("random ", random);
     console.log("option ", option);
@@ -82,13 +92,21 @@ window.onload = async () => {
     }
    
     if (!isDay) {
-      return 6;  
+      return aleatoryBall();  
     }
     saveInformation();
     console.log("configbase" , configBase);
     return option;
   }
 
+  function aleatoryBall (){
+    let numero;
+    do {
+        numero = Math.floor(Math.random() * 8) + 1; // Genera un número entre 1 y 8
+    } while (numero === 3); // Asegura que no sea 3
+    return numero;
+  }
+  
  
   function comprobeGifts(option) {
     const gifts = configBase.gifts || []; 
@@ -96,7 +114,7 @@ window.onload = async () => {
     const day = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
   
     if (gifts.includes(day)) { 
-      return option + 1;  
+      return aleatoryGift();  
     } else { 
       configBase.gifts.push(day);
       optionSound = 3;
@@ -108,6 +126,16 @@ window.onload = async () => {
     saveInformation();
     return option;
   }
+  
+
+  function aleatoryGift() {
+    let numero;
+    do {
+        numero = Math.floor(Math.random() * 9); // Genera un número entre 0 y 8
+    } while (numero === 0 || numero === 3); // Asegura que no sea 0 ni 3
+    return numero;
+}
+
 
 
   function saveInformation(){
