@@ -290,7 +290,7 @@ window.onload = async () => {
             sonidoregaloaldia.play();
           }
           else{
-            finishWinner.play();  
+           // finishWinner.play();  
           }
           
 
