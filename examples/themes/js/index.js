@@ -2,8 +2,8 @@ import { Wheel } from '../../../dist/spin-wheel-esm.js';
 import { loadFonts, loadImages } from '../../../scripts/util.js';
 import { props } from './props.js'; 
 // Audios
-const spinSound = new Audio('./sounds/rulete.mp3');
-const finishSound1 = new Audio('./sounds/winner1.wav');
+const spinSound = new Audio('./sounds/rulete.mp3'); 
+const sonidoregaloaldia= new Audio('./sounds/sonidoregaloaldia.wav');
 const finishWinner= new Audio('./sounds/winner.wav');
 const finishSound2 = new Audio('./sounds/finish.wav');
 const buttonSound = new Audio('./sounds/botonsound.wav'); // Sonido del botón
@@ -11,6 +11,7 @@ const buttonSound = new Audio('./sounds/botonsound.wav'); // Sonido del botón
 window.onload = async () => {
  
   var configBase = {} ;
+  var optionSound = 0;
   
   const generateLocalStorage = async () => {
     var localConfigBase = localStorage.getItem("configBase");
@@ -43,6 +44,8 @@ window.onload = async () => {
     console.log("random ", random);
     console.log("option ", option);
     
+    optionSound = 0;
+
     switch(option){
       case "Sampling Deluxe":
         break;
@@ -92,10 +95,12 @@ window.onload = async () => {
     const now = new Date();
     const day = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
   
-    if (gifts.includes(day)) {
+    if (gifts.includes(day)) { 
       return option + 1;  
     } else { 
       configBase.gifts.push(day);
+      optionSound = 3;
+
       console.log(`Día ${day} agregado a gifts`);
     }
     console.log(configBase);
@@ -198,6 +203,7 @@ window.onload = async () => {
   // Función para iniciar el giro
   function startSpin() {
 
+    sonidoregaloaldia.pause();
     isSpinning = true;
     isDecelerating = false;
     rotationSpeed = 0;
@@ -251,7 +257,14 @@ window.onload = async () => {
 
         finishSound2.onended = () => {
           spinSound.pause(); 
-          finishWinner.play();
+          console.log("option sound ," , optionSound);
+          if (optionSound == 3) { 
+            sonidoregaloaldia.play();
+          }
+          else{
+            finishWinner.play();  
+          }
+          
 
       };
     if (!isDecelerating) return;
