@@ -79,7 +79,7 @@ window.onload = async () => {
     }
    
     if (!isDay) {
-      return option - 1;  
+      return 6;  
     }
     saveInformation();
     console.log("configbase" , configBase);
