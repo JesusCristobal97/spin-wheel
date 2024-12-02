@@ -8,8 +8,20 @@ const finishWinner= new Audio('./sounds/winner.wav');
 const finishSound2 = new Audio('./sounds/finish.wav');
 const buttonSound = new Audio('./sounds/botonsound.wav'); // Sonido del botón
 
+
+window.addEventListener('storage', (event) => {
+  if (event.key === 'miClave') {
+      console.log('Se actualizó miClave:', event.newValue); 
+      document.getElementById('miElemento').innerText = event.newValue;
+  }
+});
+
+
 window.onload = async () => {
  
+
+      // Escucha los cambios en el localStorage
+
   var configBase = {} ;
   var optionSound = 0;
   
@@ -43,11 +55,11 @@ window.onload = async () => {
     
     var testConfig = localStorage.getItem("testConfig");
 
-    if(testConfig != null){
-      random = parseInt(testConfig);
-    }else{
+    //if(testConfig != null){
+    //  random = parseInt(testConfig);
+  //  }else{
       random = getRandomOption(options.length);
-    }
+  //  }
     
     //
     var option = options[random];
@@ -112,22 +124,25 @@ window.onload = async () => {
     const gifts = configBase.gifts || []; 
     const now = new Date();
     const day = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
-  
+    const time = `${now.getHours().toString().padStart(2, '0')}`;
+    const hourInit = 19;
+    const hourEnd = 20; 
+
     if (gifts.includes(day)) { 
       return aleatoryGift();  
     } else { 
-      configBase.gifts.push(day);
-      optionSound = 3;
-
-      console.log(`Día ${day} agregado a gifts`);
-    }
-    console.log(configBase);
-    
+      if((time >= hourInit) && (time <= hourEnd)){ 
+        configBase.gifts.push(day);
+        optionSound = 3;
+        console.log(`Día ${day} agregado a gifts`);
+      }else{
+        return aleatoryGift();  
+      }
+    } 
     saveInformation();
     return option;
   }
-  
-
+   
   function aleatoryGift() {
     let numero;
     do {
@@ -135,9 +150,7 @@ window.onload = async () => {
     } while (numero === 0 || numero === 3); // Asegura que no sea 0 ni 3
     return numero;
 }
-
-
-
+  
   function saveInformation(){
     localStorage.setItem("configBase", JSON.stringify(configBase));
     configBase = JSON.parse(localStorage.getItem("configBase"));
@@ -279,7 +292,7 @@ window.onload = async () => {
   function decelerateWheel(timestamp) {
     const itemSelect = fetchWinningItemIndexFromApi();
     console.log("itemSelect ",itemSelect );
-    wheel.spinToItem(itemSelect, 1500,true,6,1,null);
+    wheel.spinToItem(itemSelect, 4500,true,8,1,null);
         finishSound2.play();  
         finishSound2.volume = 0;
 
