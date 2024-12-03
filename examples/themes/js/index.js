@@ -41,13 +41,11 @@ window.onload = async () => {
     var options = configBase.options;
     var random = 0;
     
-    var testConfig = localStorage.getItem("testConfig");
+    //var testConfig = localStorage.getItem("testConfig");
 
-    if(testConfig != null){
-      random = parseInt(testConfig);
-    }else{
-      random = getRandomOption(options.length);
-    }
+    
+     random = getRandomOption(options.length);
+    
     
     //
     var option = options[random];
