@@ -2,14 +2,25 @@ import { Wheel } from '../../../dist/spin-wheel-esm.js';
 import { loadFonts, loadImages } from '../../../scripts/util.js';
 import { props } from './props.js'; 
 // Audios
-const spinSound = new Audio('./sounds/rulete.mp3'); 
-const sonidoregaloaldia= new Audio('./sounds/sonidoregaloaldia.wav');
-const finishWinner= new Audio('./sounds/winner.wav');
+const spinSound = new Audio('./sounds/rulete-modified.mp3'); 
+const sonidoregaloaldia= new Audio('./sounds/sonidoregaloaldia.wav'); 
 const finishSound2 = new Audio('./sounds/finish.wav');
 const buttonSound = new Audio('./sounds/botonsound.wav'); // Sonido del botón
 
+
+window.addEventListener('storage', (event) => {
+  if (event.key === 'miClave') {
+      console.log('Se actualizó miClave:', event.newValue); 
+      document.getElementById('miElemento').innerText = event.newValue;
+  }
+});
+
+
 window.onload = async () => {
  
+
+      // Escucha los cambios en el localStorage
+
   var configBase = {} ;
   var optionSound = 0;
   
@@ -41,11 +52,13 @@ window.onload = async () => {
     var options = configBase.options;
     var random = 0;
     
-    //var testConfig = localStorage.getItem("testConfig");
+    var testConfig = localStorage.getItem("testConfig");
 
-    
-     random = getRandomOption(options.length);
-    
+    //if(testConfig != null){
+    //  random = parseInt(testConfig);
+  //  }else{
+      random = getRandomOption(options.length);
+  //  }
     
     //
     var option = options[random];
@@ -110,22 +123,25 @@ window.onload = async () => {
     const gifts = configBase.gifts || []; 
     const now = new Date();
     const day = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
-  
+    const time = `${now.getHours().toString().padStart(2, '0')}`;
+    const hourInit = 19;
+    const hourEnd = 20; 
+
     if (gifts.includes(day)) { 
       return aleatoryGift();  
     } else { 
-      configBase.gifts.push(day);
-      optionSound = 3;
-
-      console.log(`Día ${day} agregado a gifts`);
-    }
-    console.log(configBase);
-    
+      if((time >= hourInit) && (time <= hourEnd)){ 
+        configBase.gifts.push(day);
+        optionSound = 3;
+        console.log(`Día ${day} agregado a gifts`);
+      }else{
+        return aleatoryGift();  
+      }
+    } 
     saveInformation();
     return option;
   }
-  
-
+   
   function aleatoryGift() {
     let numero;
     do {
@@ -133,9 +149,7 @@ window.onload = async () => {
     } while (numero === 0 || numero === 3); // Asegura que no sea 0 ni 3
     return numero;
 }
-
-
-
+  
   function saveInformation(){
     localStorage.setItem("configBase", JSON.stringify(configBase));
     configBase = JSON.parse(localStorage.getItem("configBase"));
@@ -177,6 +191,7 @@ window.onload = async () => {
     });
   };
 
+
   // Seleccionar el primer elemento por defecto
   dropdown.options[0].selected = 'selected';
   dropdown.onchange();
@@ -209,7 +224,7 @@ window.onload = async () => {
     if (e.code === 'Space' && isSpinning) { 
 
       e.preventDefault();
-      stopSpin();
+       stopSpin();
     }
   });
 
@@ -261,7 +276,7 @@ window.onload = async () => {
     isSpinning = false;
     isDecelerating = false;
  
-    spinSound.currentTime = 0;
+    //spinSound.currentTime = 0;
     btnSpin.classList.remove('pressed');
     document.querySelector('.wheel-wrapper').classList.remove('vibrate');
 
@@ -277,35 +292,48 @@ window.onload = async () => {
   function decelerateWheel(timestamp) {
     const itemSelect = fetchWinningItemIndexFromApi();
     console.log("itemSelect ",itemSelect );
-    wheel.spinToItem(itemSelect, 1500,true,6,1,null);
+    wheel.spinToItem(itemSelect, 5500,true,7,1,null);
+
+    setTimeout(() => {
+      spinSound.pause();  
+    }, 5500);
+
         finishSound2.play();  
         finishSound2.volume = 0;
 
         finishSound2.onended = () => {
-          spinSound.pause(); 
           console.log("option sound ," , optionSound);
-          if (optionSound == 3) { 
+          if (optionSound == 3) {  
             sonidoregaloaldia.play();
           }
           else{
-           // finishWinner.play();  
-          }
-          
-
+          } 
       };
-    if (!isDecelerating) return;
+
+    
+    /* */
+
+    if (!isDecelerating)
+      {
+        console.log("isDecelerating");
+        return;
+      }
+ 
 
     if (!decelerationStartTime) {
       decelerationStartTime = timestamp;
+      console.log("decelerationStartTime");
     }
- 
- 
 
     if (progress < 1) {
+      console.log("progress");
+
       // Continuar la animación
       //spinAnimationFrame = requestAnimationFrame(decelerateWheel);
     } else {
       // Desaceleración completa
+      console.log("isDecelerating");
+
       isDecelerating = false;
       // Reproducir sonidos de finalización
         
