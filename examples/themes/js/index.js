@@ -292,11 +292,11 @@ window.onload = async () => {
   function decelerateWheel(timestamp) {
     const itemSelect = fetchWinningItemIndexFromApi();
     console.log("itemSelect ",itemSelect );
-    wheel.spinToItem(itemSelect, 5500,true,7,1,null);
+    wheel.spinToItem(itemSelect, 5000,true,7,1,null);
 
     setTimeout(() => {
       spinSound.pause();  
-    }, 5500);
+    }, 5000);
 
         finishSound2.play();  
         finishSound2.volume = 0;
