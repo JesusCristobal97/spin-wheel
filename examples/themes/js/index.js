@@ -17,8 +17,10 @@ window.addEventListener('storage', (event) => {
 
 
 window.onload = async () => {
- 
 
+  var timreRandom = calculeTimeRandom();
+ 
+console.log(calculeTimeRandom());
       // Escucha los cambios en el localStorage
 
   var configBase = {} ;
@@ -61,7 +63,7 @@ window.onload = async () => {
   //  }
     
     //
-    var option = options[random];
+    var option = options[3];
     console.log("random ", random);
     console.log("option ", option);
     
@@ -118,14 +120,33 @@ window.onload = async () => {
     return numero;
   }
   
+  function calculeTimeRandom() {
+    const hourInit = 19;  
+    const hourEnd = 21;   
+ 
+    const randomHour = Math.floor(Math.random() * (hourEnd - hourInit + 1)) + hourInit;
+ 
+    const maxMinutes = randomHour === hourEnd ? 0 : 59;
+ 
+    const randomMinutes = Math.floor(Math.random() * (maxMinutes + 1));
+    const randomSeconds = Math.floor(Math.random() * 60);
+ 
+    const formattedTime = `${randomHour.toString().padStart(2, '0')}:${randomMinutes.toString().padStart(2, '0')}:${randomSeconds.toString().padStart(2, '0')}`;
+
+    return formattedTime;
+}
+
+
+
  
   function comprobeGifts(option) {
     const gifts = configBase.gifts || []; 
     const now = new Date();
     const day = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
     const time = `${now.getHours().toString().padStart(2, '0')}`;
+    console.log("time ", time);
     const hourInit = 19;
-    const hourEnd = 20; 
+    const hourEnd = 21; 
 
     if (gifts.includes(day)) { 
       return aleatoryGift();  
