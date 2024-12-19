@@ -18,10 +18,9 @@ window.addEventListener('storage', (event) => {
 
 window.onload = async () => {
 
-  var timreRandom = calculeTimeRandom();
+var timeRandom = calculeTimeRandom();
  
-console.log(calculeTimeRandom());
-      // Escucha los cambios en el localStorage
+console.log("timeRandom " ,timeRandom); 
 
   var configBase = {} ;
   var optionSound = 0;
@@ -53,16 +52,10 @@ console.log(calculeTimeRandom());
     
     var options = configBase.options;
     var random = 0;
-    
-    var testConfig = localStorage.getItem("testConfig");
+     
 
-    //if(testConfig != null){
-    //  random = parseInt(testConfig);
-  //  }else{
-      random = getRandomOption(options.length);
-  //  }
-    
-    //
+    random = getRandomOption(options.length);
+ 
     var option = options[3];
     console.log("random ", random);
     console.log("option ", option);
@@ -144,17 +137,28 @@ console.log(calculeTimeRandom());
     const now = new Date();
     const day = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
     const time = `${now.getHours().toString().padStart(2, '0')}`;
+    const minute = `${now.getMinutes().toString().padStart(2, '0')}`;
     console.log("time ", time);
-    const hourInit = 19;
-    const hourEnd = 21; 
+
 
     if (gifts.includes(day)) { 
       return aleatoryGift();  
     } else { 
-      if((time >= hourInit) && (time <= hourEnd)){ 
-        configBase.gifts.push(day);
-        optionSound = 3;
-        console.log(`Día ${day} agregado a gifts`);
+      const horaCompleta = timeRandom;
+      const partes = horaCompleta.split(":"); 
+      const horas = parseInt(partes[0]);    
+      const minutos = parseInt(partes[1]);  
+ 
+      console.log("hourInit" ,horas);
+      console.log("hourEnd" ,minutos);
+
+      if((time >= horas)){ 
+        if(minute <= minutos){
+          configBase.gifts.push(day);
+          optionSound = 3;
+          console.log(`Día ${day} agregado a gifts`);
+        }
+       
       }else{
         return aleatoryGift();  
       }
@@ -313,11 +317,11 @@ console.log(calculeTimeRandom());
   function decelerateWheel(timestamp) {
     const itemSelect = fetchWinningItemIndexFromApi();
     console.log("itemSelect ",itemSelect );
-    wheel.spinToItem(itemSelect, 5000,true,7,1,null);
+    wheel.spinToItem(itemSelect, 3000,true,7,1,null);
 
     setTimeout(() => {
       spinSound.pause();  
-    }, 5000);
+    }, 3000);
 
         finishSound2.play();  
         finishSound2.volume = 0;
