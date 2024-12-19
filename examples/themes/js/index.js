@@ -56,7 +56,7 @@ console.log("timeRandom " ,timeRandom);
 
     random = getRandomOption(options.length);
  
-    var option = options[3];
+    var option = options[random];
     console.log("random ", random);
     console.log("option ", option);
     
@@ -153,7 +153,7 @@ console.log("timeRandom " ,timeRandom);
       console.log("hourEnd" ,minutos);
 
       if((time >= horas)){ 
-        if(minute <= minutos){
+        if(minute >= minutos){
           configBase.gifts.push(day);
           optionSound = 3;
           console.log(`Día ${day} agregado a gifts`);
