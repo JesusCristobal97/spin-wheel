@@ -7,18 +7,11 @@ const sonidoregaloaldia= new Audio('./sounds/sonidoregaloaldia.wav');
 const finishSound2 = new Audio('./sounds/finish.wav');
 const buttonSound = new Audio('./sounds/botonsound.wav'); // Sonido del botón
 
+ 
+window.onload = async () => { 
 
-window.addEventListener('storage', (event) => {
-  if (event.key === 'miClave') {
-      console.log('Se actualizó miClave:', event.newValue); 
-      document.getElementById('miElemento').innerText = event.newValue;
-  }
-});
+var timeRandom =  calculeTimeRandom();
 
-
-window.onload = async () => {
-
-var timeRandom = calculeTimeRandom();
  
 console.log("timeRandom " ,timeRandom); 
 
@@ -47,14 +40,17 @@ console.log("timeRandom " ,timeRandom);
   
   
   await generateLocalStorage();
- 
+  let isFetching = false; 
   const  fetchWinningItemIndexFromApi =  () => {
-    
+    if (isFetching) return; // Si ya se está ejecutando, sal del método
+    isFetching = true;
+
+
     var options = configBase.options;
     var random = 0;
      
 
-    random = getRandomOption(options.length);
+    random =  getRandomOption(options.length);
  
     var option = options[random];
     console.log("random ", random);
@@ -72,10 +68,12 @@ console.log("timeRandom " ,timeRandom);
         break;
       case "TARJETA REGALO":
         random = comprobeGifts(random);
+        console.log("random return ", random);
         break;
 
 
     } 
+    isFetching = false;
     return random;
   }
 
@@ -114,58 +112,69 @@ console.log("timeRandom " ,timeRandom);
   }
   
   function calculeTimeRandom() {
-    const hourInit = 19;  
-    const hourEnd = 21;   
+    const hourInit = 19;
+    const hourEnd = 21;
+   
+    const validHourInit = Math.max(0, Math.min(23, hourInit));
+    const validHourEnd = Math.max(validHourInit, Math.min(23, hourEnd));
+  
  
-    const randomHour = Math.floor(Math.random() * (hourEnd - hourInit + 1)) + hourInit;
+    const randomHour = Math.floor(Math.random() * (validHourEnd - validHourInit + 1)) + validHourInit;
+  
  
-    const maxMinutes = randomHour === hourEnd ? 0 : 59;
- 
-    const randomMinutes = Math.floor(Math.random() * (maxMinutes + 1));
+    const randomMinutes = Math.floor(Math.random() * 60);
     const randomSeconds = Math.floor(Math.random() * 60);
+  
  
     const formattedTime = `${randomHour.toString().padStart(2, '0')}:${randomMinutes.toString().padStart(2, '0')}:${randomSeconds.toString().padStart(2, '0')}`;
-
+  
     return formattedTime;
+  }
+  
+
+
+ 
+function comprobeGifts(option) {
+  const gifts = configBase.gifts || [];
+  const now = new Date();
+ 
+  const day = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
+ 
+    // Verificar si es el domingo específico (24-12-2024)
+    if (day === "22-12-2024") {
+      console.log("Hoy es el domingo especial (24-12-2024), 'TARJETA REGALO' no está disponible.");
+      return aleatoryGift(); // Devuelve una opción aleatoria
+    }
+
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+
+  console.log("Hora actual:", `${currentHour}:${currentMinute}`);
+ 
+  if (!/^\d{2}:\d{2}:\d{2}$/.test(timeRandom)) {
+    console.error("Formato inválido de timeRandom:", timeRandom);
+    return aleatoryGift();
+  }
+
+  if (gifts.includes(day)) {
+    return aleatoryGift();  
+  } 
+ 
+  const [horaLimite, minutosLimite] = timeRandom.split(":").map(Number);
+
+  console.log("Hora límite:", `${horaLimite}:${minutosLimite}`);
+ 
+  if (currentHour > horaLimite || (currentHour === horaLimite && currentMinute >= minutosLimite)) {
+    configBase.gifts.push(day);
+    saveInformation();  
+    optionSound = 3;
+    console.log(`Día ${day} agregado a gifts`);
+    return option;
+  } else { 
+    return aleatoryGift();
+  }
 }
 
-
-
- 
-  function comprobeGifts(option) {
-    const gifts = configBase.gifts || []; 
-    const now = new Date();
-    const day = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
-    const time = `${now.getHours().toString().padStart(2, '0')}`;
-    const minute = `${now.getMinutes().toString().padStart(2, '0')}`;
-    console.log("time ", time);
-
-
-    if (gifts.includes(day)) { 
-      return aleatoryGift();  
-    } else { 
-      const horaCompleta = timeRandom;
-      const partes = horaCompleta.split(":"); 
-      const horas = parseInt(partes[0]);    
-      const minutos = parseInt(partes[1]);  
- 
-      console.log("hourInit" ,horas);
-      console.log("hourEnd" ,minutos);
-
-      if((time >= horas)){ 
-        if(minute >= minutos){
-          configBase.gifts.push(day);
-          optionSound = 3;
-          console.log(`Día ${day} agregado a gifts`);
-        }
-       
-      }else{
-        return aleatoryGift();  
-      }
-    } 
-    saveInformation();
-    return option;
-  }
    
   function aleatoryGift() {
     let numero;
@@ -176,8 +185,10 @@ console.log("timeRandom " ,timeRandom);
 }
   
   function saveInformation(){
-    localStorage.setItem("configBase", JSON.stringify(configBase));
-    configBase = JSON.parse(localStorage.getItem("configBase"));
+    const localData = JSON.stringify(configBase);
+    if (localData !== localStorage.getItem("configBase")) {
+      localStorage.setItem("configBase", localData);
+    }
   }
   
   await loadFonts(props.map(i => i.itemLabelFont));
@@ -236,11 +247,13 @@ console.log("timeRandom " ,timeRandom);
   const maxRotationSpeed =  20; // Velocidad máxima de rotación
   
   let decelerationStartTime = 0;
+  let isKeyDown = false;
 
   // Escuchar la tecla Espacio para iniciar y detener el giro
   document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && !isSpinning && !isDecelerating) {
+    if (e.code === 'Space' && !isSpinning && !isDecelerating  && !isFetching) {
       e.preventDefault();
+      isKeyDown = true; 
       startSpin();
     }
   });
@@ -249,6 +262,7 @@ console.log("timeRandom " ,timeRandom);
     if (e.code === 'Space' && isSpinning) { 
 
       e.preventDefault();
+      isKeyDown = false;
        stopSpin();
     }
   });
@@ -333,6 +347,7 @@ console.log("timeRandom " ,timeRandom);
           }
           else{
           } 
+          optionSound = 0;
       };
 
     
